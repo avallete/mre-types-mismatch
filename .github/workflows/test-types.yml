@@ -33,6 +33,24 @@ jobs:
           echo "diff types:"
           diff types.ts remote-types.ts
 
+      - name: Fetch postgres-meta data
+        run: |
+          # Get the postgres-meta container ID
+          META_CONTAINER=$(docker ps | grep pg_meta | awk '{print $1}')
+
+          # Fetch functions
+          docker exec -i $META_CONTAINER /bin/bash -c "node -e \"fetch('http://localhost:8080/functions').then(res => res.json()).then(d => console.log(JSON.stringify(d, null, 2))).catch(console.error)\"" > remote-functions.json
+
+          # Fetch types
+          docker exec -i $META_CONTAINER /bin/bash -c "node -e \"fetch('http://localhost:8080/types').then(res => res.json()).then(d => console.log(JSON.stringify(d, null, 2))).catch(console.error)\"" > remote-types.json
+
+          # Compare with committed files
+          echo "Comparing functions:"
+          diff functions.json remote-functions.json || true
+
+          echo "Comparing types:"
+          diff types.json remote-types.json || true
+
       - name: Cleanup
         if: always()
         run: npm run stop
