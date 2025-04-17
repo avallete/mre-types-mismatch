@@ -1,0 +1,13 @@
+{
+  "name": "supabase-type-gen-test",
+  "version": "1.0.0",
+  "description": "Test repository for Supabase type generation with pgvector",
+  "scripts": {
+    "start": "npx supabase start",
+    "stop": "npx supabase stop",
+    "gen-types": "npx supabase gen types typescript --local"
+  },
+  "devDependencies": {
+    "supabase": "2.20.12"
+  }
+}

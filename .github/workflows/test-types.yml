@@ -1,0 +1,37 @@
+name: Test Type Generation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Supabase
+        run: |
+          npm run start
+          sleep 10  # Wait for services to start
+
+      - name: Generate and compare types
+        run: |
+          # Generate new types
+          npm run gen-types > ./remote-types.ts
+          echo "diff types:"
+          diff types.ts remote-types.ts
+
+      - name: Cleanup
+        if: always()
+        run: npm run stop
